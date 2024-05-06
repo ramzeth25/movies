@@ -1,6 +1,6 @@
 from flask import request
 from service.MovieService import MovieService
-from api.validators import validate_movie_query, validate_id, validate_movie_data
+from api.validators import validate_movie_query, validate_id, validate_movie_data, validate_param
 
 
 def list_movies():
@@ -22,8 +22,13 @@ def get_movie(movie_id):
     return movie.to_dict()
 
 
-def get_movie_by(param):
-    return 'MovieService().list()'
+def get_movie_by():
+    name = request.args.get('name')
+    year = request.args.get('year')
+    genre = request.args.get('genre')
+    params = validate_param(name, year, genre)
+    print(params, "This is data inside get_movi_by function")
+    return MovieService().find_by(params)
 
 
 def delete_movie(movie_id):

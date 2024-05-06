@@ -14,7 +14,7 @@ def shutdown_session(exception=None):
 app.add_url_rule("/movies", methods=['GET'], view_func=list_movies)
 app.add_url_rule("/movies", methods=['POST'], view_func=create_movie)
 app.add_url_rule("/movies/<movie_id>", methods=['GET'], view_func=get_movie)
-app.add_url_rule("/movies/<param>", methods=['GET'], view_func=get_movie_by)
+app.add_url_rule("/movies/values", methods=['GET'], view_func=get_movie_by)
 app.add_url_rule("/movies/<movie_id>", methods=['DELETE'], view_func=delete_movie)
 app.add_url_rule("/movies/<movie_id>", methods=['PUT'], view_func=update_movie)
 

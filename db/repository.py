@@ -1,7 +1,11 @@
+import sqlalchemy
 from sqlalchemy import update, select
 from flask import request
+from sqlalchemy.orm import session
+from sqlalchemy import or_
 from db.database import db_session
 from db.entity import Movie
+
 
 
 class MovieRepository:
@@ -29,30 +33,60 @@ class MovieRepository:
 
         return None
 
-    def find_by_params(self, param):  # retrieving movies by incomplete name, year, genre with pagination
-        genre_list = ['Action', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance']
-        if isinstance(param, str):
-            if param in genre_list:
-                stmt = (select(Movie).where(Movie.genre.filter('{}').format(param)))
-                movies = []
-                for row in self.session.execute(stmt):
-                    data, *_ = row
-                    movies.append(data.to_dict())
-                return movies
-            else:
-                stmt = (select(Movie).where(Movie.genre.filter('%{}%').format(param)))
-                movies = []
-                for row in self.session.execute(stmt):
-                    data, *_ = row
-                    movies.append(data.to_dict())
-                return movies
-        if isinstance(param, int):
-            stmt = (select(Movie).where(Movie.genre.filter('{}%').format(param)))
-            movies = []
+    # def find_by_params(self, param):  # retrieving movies by incomplete name, year, genre with pagination
+    #     search = "%{}%".format(param)
+    #     start = request.args.get('start', 0)
+    #     limit = request.args.get('limit', 3)
+    #     stmt = select(Movie).filter(Movie.original_title.like(search))
+    #     stmt = stmt.offset(start).limit(limit)
+    #
+    #     movies = []
+    #     for row in self.session.execute(stmt):
+    #         data, *_ = row
+    #         movies.append(data.to_dict())
+    #
+    #     return movies
+    def find_by_params(self, params):  # retrieving movies by incomplete name, year, genre with pagination
+        year = None
+        name = None
+        genre = None
+        if 'name' in params:
+            name = params['name']
+        if 'year' in params:
+            year = params['year']
+        if 'genre' in params:
+            genre = params['genre']
+        print('Values after IF', name, year, genre)
+        start = request.args.get('start', 0)
+        limit = request.args.get('limit', 3)
+        movies = []
+        if name:
+            search = "%{}%".format(name)
+            stmt = select(Movie).filter(Movie.original_title.like(search)).where(Movie.is_deleted == False)
+            stmt = stmt.offset(start).limit(limit)
+
             for row in self.session.execute(stmt):
                 data, *_ = row
                 movies.append(data.to_dict())
-            return movies
+        if year:
+            search = "%{}%".format(year)
+            stmt = select(Movie).filter(Movie.release_date.like(search)).where(Movie.is_deleted == False)
+            stmt = stmt.offset(start).limit(limit)
+
+            for row in self.session.execute(stmt):
+                data, *_ = row
+                movies.append(data.to_dict())
+
+        if genre:
+            search = "%{}%".format(genre)
+            stmt = select(Movie).filter(Movie.genre.like(search)).where(Movie.is_deleted == False)
+            stmt = stmt.offset(start).limit(limit)
+
+            for row in self.session.execute(stmt):
+                data, *_ = row
+                movies.append(data.to_dict())
+
+        return movies
 
     def list_movies(self, query):
 

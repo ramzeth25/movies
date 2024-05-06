@@ -1,3 +1,5 @@
+from flask import request
+
 MOVIE_FIELDS = ['title', 'original_title', 'release_date',
                 'play_time', 'rating', 'max_rating', 'short_story', 'genre']
 
@@ -25,3 +27,23 @@ def validate_id(entity_id):
         return int(entity_id)
 
     return None
+
+
+def validate_param(name, year, genre):
+    params = {}
+    if isinstance(name, str):
+        params["name"] = name
+    if isinstance(year, str) and year.isnumeric():
+        params["year"] = int(year)
+    if isinstance(genre, str):
+        params["genre"] = genre
+    print(params, 'Параметри після валідації')
+    return params
+
+
+
+
+
+
+
+

@@ -16,8 +16,12 @@ class MovieService:
     def find_by_id(self, movie_id):
         return self.repository.find_by_id(movie_id)
 
-    def find_by(self, param):
-        return self.repository.find_by_params(param)
+    # def find_by(self, param):
+    #     return self.repository.find_by_params(param)
+
+    def find_by(self, params):
+        print("Code inside find_by from MovieService")
+        return self.repository.find_by_params(params)
 
     def list(self, query):
         return self.repository.list_movies(query)
